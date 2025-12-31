@@ -36,3 +36,37 @@ build/
 
 ### Mac OS ###
 .DS_Store
+
+# Spring Boot
+HELP.md
+.springBeans
+
+# Environment variables and secrets
+.env
+.env.local
+.env.*.local
+application-local.properties
+application-secret.properties
+
+# Database
+*.db
+*.sqlite
+*.h2.db
+
+# Test coverage
+*.exec
+coverage/
+
+# Temporary files
+*.tmp
+*.bak
+temp/
+tmp/
+
+# Logs
+logs/
+*.log.*
+
+# Application specific
+uploads/
+static/images/books/
