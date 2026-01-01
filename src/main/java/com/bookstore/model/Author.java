@@ -30,6 +30,10 @@ public class Author {
         this.books = books;
     }
 
+    public Author() {
+
+    }
+
     // getters and setters
     public Long getId() {
         return id;

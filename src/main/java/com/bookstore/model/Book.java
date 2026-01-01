@@ -71,6 +71,10 @@ public class Book {
         this.reviews = reviews;
     }
 
+    public Book() {
+
+    }
+
     public Long getId() {
         return id;
     }

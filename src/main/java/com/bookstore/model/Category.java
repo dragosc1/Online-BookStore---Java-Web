@@ -29,6 +29,10 @@ public class Category {
         this.books = books;
     }
 
+    public Category() {
+
+    }
+
     public Long getId() {
         return id;
     }
