@@ -38,6 +38,10 @@ public class Review {
         this.user = user;
     }
 
+    public Review() {
+
+    }
+
     public Long getId() {
         return id;
     }

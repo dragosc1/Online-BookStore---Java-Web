@@ -31,6 +31,10 @@ public class Cart {
         this.items = items;
     }
 
+    public Cart() {
+
+    }
+
     public Long getId() {
         return id;
     }

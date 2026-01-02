@@ -35,6 +35,10 @@ public class Payment {
         this.order = order;
     }
 
+    public Payment() {
+
+    }
+
     public Long getId() {
         return id;
     }

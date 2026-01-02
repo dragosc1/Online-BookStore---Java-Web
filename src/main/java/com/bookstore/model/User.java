@@ -42,6 +42,10 @@ public class User {
         this.addresses = addresses;
     }
 
+    public User() {
+
+    }
+
     @Override
     public String toString() {
         return "User{" +

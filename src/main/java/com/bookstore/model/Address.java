@@ -42,6 +42,10 @@ public class Address {
         this.user = user;
     }
 
+    public Address() {
+
+    }
+
     // getters and setters
     public Long getId() {
         return id;

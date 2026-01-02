@@ -35,6 +35,10 @@ public class CartItem {
         this.book = book;
     }
 
+    public CartItem() {
+
+    }
+
     public Long getId() {
         return id;
     }

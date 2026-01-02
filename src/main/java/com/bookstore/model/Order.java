@@ -49,6 +49,10 @@ public class Order {
         this.shippingAddress = shippingAddress;
     }
 
+    public Order() {
+
+    }
+
     public Long getId() {
         return id;
     }

@@ -38,6 +38,10 @@ public class OrderItem {
         this.book = book;
     }
 
+    public OrderItem() {
+
+    }
+
     public Long getId() {
         return id;
     }

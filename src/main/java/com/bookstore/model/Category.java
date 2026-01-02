@@ -1,5 +1,6 @@
 package com.bookstore.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import java.util.List;
 
@@ -12,6 +13,7 @@ public class Category {
     private String name;
 
     @ManyToMany(mappedBy = "categories")
+    @JsonBackReference
     private List<Book> books;
 
     @Override
@@ -27,6 +29,10 @@ public class Category {
         this.id = id;
         this.name = name;
         this.books = books;
+    }
+
+    public Category() {
+
     }
 
     public Long getId() {
