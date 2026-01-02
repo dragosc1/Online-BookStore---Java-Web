@@ -70,3 +70,6 @@ logs/
 # Application specific
 uploads/
 static/images/books/
+src/main/resources/application.properties
+src/main/resources/application-dev.properties
+src/main/resources/application-prod.properties

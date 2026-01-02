@@ -1,13 +1,22 @@
 package com.bookstore.dto.request;
 
+import com.bookstore.validation.annotations.ValidISBN;
+import com.bookstore.validation.annotations.ValidStock;
+
 import java.util.List;
 
 public class BookRequestDto {
 
     private String title;
+
+    @ValidISBN
     private String isbn;
+
     private Double price;
+
+    @ValidStock
     private Integer stock;
+
     private String description;
 
     // List of author IDs (existing authors)
