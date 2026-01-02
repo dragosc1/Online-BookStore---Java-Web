@@ -1,6 +1,9 @@
 package com.bookstore.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
+import org.hibernate.validator.constraints.UniqueElements;
+
 import java.util.List;
 
 @Entity
@@ -9,9 +12,11 @@ public class Author {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable=false, unique = true)
     private String name;
 
     @ManyToMany(mappedBy = "authors")
+    @JsonBackReference
     private List<Book> books;
 
     @Override
@@ -23,15 +28,15 @@ public class Author {
                 '}';
     }
 
+    public Author() {
+
+    }
+
     // constructor
     public Author(Long id, String name, List<Book> books) {
         this.id = id;
         this.name = name;
         this.books = books;
-    }
-
-    public Author() {
-
     }
 
     // getters and setters

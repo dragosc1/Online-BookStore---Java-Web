@@ -1,5 +1,7 @@
 package com.bookstore.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import java.util.List;
 
@@ -16,28 +18,29 @@ public class Book {
     private String description;
 
     @ManyToMany
-    @JoinTable(
-            name = "book_author",
+    @JoinTable(name = "book_author",
             joinColumns = @JoinColumn(name = "book_id"),
-            inverseJoinColumns = @JoinColumn(name = "author_id")
-    )
+            inverseJoinColumns = @JoinColumn(name = "author_id"))
+    @JsonManagedReference
     private List<Author> authors;
 
     @ManyToMany
-    @JoinTable(
-            name = "book_category",
+    @JoinTable(name = "book_category",
             joinColumns = @JoinColumn(name = "book_id"),
-            inverseJoinColumns = @JoinColumn(name = "category_id")
-    )
+            inverseJoinColumns = @JoinColumn(name = "category_id"))
+    @JsonManagedReference
     private List<Category> categories;
 
     @OneToMany(mappedBy = "book")
+    @JsonBackReference
     private List<OrderItem> orderItems;
 
     @OneToMany(mappedBy = "book")
+    @JsonBackReference
     private List<CartItem> cartItems;
 
     @OneToMany(mappedBy = "book")
+    @JsonBackReference
     private List<Review> reviews;
 
     @Override

@@ -1,5 +1,6 @@
 package com.bookstore.security;
 
+import com.bookstore.config.JwtConfig;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
@@ -13,6 +14,11 @@ import java.util.Date;
 @Component
 public class JwtTokenProvider {
 
+    private final JwtConfig JwtConfiguration;
+
+    public JwtTokenProvider(JwtConfig JwtConfiguration) {
+        this.JwtConfiguration = JwtConfiguration;
+    }
 
     @Value("${jwt.secret}")
     private String secret;
@@ -23,7 +29,7 @@ public class JwtTokenProvider {
 
 
     private Key getSigningKey() {
-        return Keys.hmacShaKeyFor(secret.getBytes());
+        return Keys.hmacShaKeyFor(JwtConfiguration.getSecret().getBytes());
     }
 
 
@@ -31,7 +37,7 @@ public class JwtTokenProvider {
         return Jwts.builder()
                 .setSubject(username)
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + expiration))
+                .setExpiration(new Date(System.currentTimeMillis() + JwtConfiguration.getExpiration()))
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
