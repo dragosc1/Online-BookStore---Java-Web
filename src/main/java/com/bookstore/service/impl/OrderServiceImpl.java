@@ -3,12 +3,17 @@ package com.bookstore.service.impl;
 import com.bookstore.dto.request.CheckoutRequestDto;
 import com.bookstore.dto.response.OrderResponseDto;
 import com.bookstore.dto.response.OrderResponseDto.OrderItemDto;
+import com.bookstore.exception.InvalidOrderStateException;
+import com.bookstore.exception.PaymentFailedException;
+import com.bookstore.exception.ResourceNotFoundException;
+import com.bookstore.exception.UnauthorizedException;
 import com.bookstore.model.*;
 import com.bookstore.model.enums.OrderStatus;
 import com.bookstore.model.enums.PaymentStatus;
 import com.bookstore.repository.*;
 import com.bookstore.service.InventoryService;
 import com.bookstore.service.OrderService;
+import com.bookstore.util.OrderMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -48,24 +53,20 @@ public class OrderServiceImpl implements OrderService {
                 ? request.getUserId()
                 : currentUser.getId();
 
-        // --- Role check ---
-        if (currentUser.getRole().name().equals("CUSTOMER")
-                && !userId.equals(currentUser.getId())) {
-            throw new RuntimeException("Access denied: cannot checkout for another user");
-        }
+        validateUserAccess(userId, currentUser);
 
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         Cart cart = cartRepository.findById(request.getCartId())
-                .orElseThrow(() -> new RuntimeException("Cart not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Cart not found"));
 
         if (!cart.getUser().getId().equals(user.getId())) {
-            throw new RuntimeException("Cart does not belong to user");
+            throw new UnauthorizedException("Cart does not belong to user");
         }
 
         if (cart.getItems() == null || cart.getItems().isEmpty()) {
-            throw new RuntimeException("Cart is empty");
+            throw new InvalidOrderStateException("Cart is empty");
         }
 
         // --- Create order ---
@@ -112,7 +113,7 @@ public class OrderServiceImpl implements OrderService {
 
         if (paymentStatus == PaymentStatus.FAILED) {
             inventoryService.restoreStock(orderItems);
-            throw new RuntimeException("Payment failed");
+            throw new PaymentFailedException("Payment failed");
         }
 
         order.setPayment(payment);
@@ -124,35 +125,30 @@ public class OrderServiceImpl implements OrderService {
         cartItemRepository.deleteAll(cart.getItems());
         cart.getItems().clear(); // keep in-memory state consistent
 
-        return mapToDto(order);
+        return OrderMapper.mapToDto(order);
     }
 
     // ------------------ List Orders ------------------
     @Override
     public List<OrderResponseDto> getOrders(Long requestedUserId, User currentUser) {
-        if (currentUser.getRole().name().equals("CUSTOMER") && !requestedUserId.equals(currentUser.getId())) {
-            throw new RuntimeException("Access denied: cannot view other users' orders");
-        }
+        validateUserAccess(requestedUserId, currentUser);
 
         User user = userRepository.findById(requestedUserId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         List<Order> orders = orderRepository.findByUser(user);
-        return orders.stream().map(this::mapToDto).collect(Collectors.toList());
+        return orders.stream().map(OrderMapper::mapToDto).collect(Collectors.toList());
     }
 
     // ------------------ Get Single Order ------------------
     @Override
     public OrderResponseDto getOrder(Long orderId, User currentUser) {
         Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new RuntimeException("Order not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Order not found"));
 
-        if (currentUser.getRole().name().equals("CUSTOMER") &&
-                !order.getUser().getId().equals(currentUser.getId())) {
-            throw new RuntimeException("Access denied: cannot view other users' orders");
-        }
+        validateOrderAccess(order, currentUser);
 
-        return mapToDto(order);
+        return OrderMapper.mapToDto(order);
     }
 
     // ------------------ Update Order Status ------------------
@@ -160,12 +156,9 @@ public class OrderServiceImpl implements OrderService {
     @Transactional
     public OrderResponseDto updateOrderStatus(Long orderId, String status, User currentUser) {
         Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new RuntimeException("Order not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Order not found"));
 
-        if (currentUser.getRole().name().equals("CUSTOMER") &&
-                !order.getUser().getId().equals(currentUser.getId())) {
-            throw new RuntimeException("Access denied");
-        }
+        validateOrderAccess(order, currentUser);
 
         OrderStatus newStatus = OrderStatus.valueOf(status.toUpperCase());
         order.setStatus(newStatus);
@@ -176,29 +169,23 @@ public class OrderServiceImpl implements OrderService {
         }
 
         orderRepository.save(order);
-        return mapToDto(order);
+        return OrderMapper.mapToDto(order);
     }
 
-    // ------------------ Mapper ------------------
-    private OrderResponseDto mapToDto(Order order) {
-        List<OrderItemDto> items = order.getOrderItems().stream()
-                .map(item -> new OrderItemDto(
-                        item.getBook().getId(),
-                        item.getBook().getTitle(),
-                        item.getPrice(),
-                        item.getQuantity()
-                ))
-                .collect(Collectors.toList());
+    private void validateOrderAccess(Order order, User currentUser) {
+        // --- Role check ---
+        if (currentUser.getRole().name().equals("CUSTOMER") &&
+                !order.getUser().getId().equals(currentUser.getId())) {
+            throw new UnauthorizedException("Access denied");
+        }
+    }
 
-        double total = items.stream().mapToDouble(i -> i.getPrice() * i.getQuantity()).sum();
-
-        return new OrderResponseDto(
-                order.getId(),
-                order.getUser().getId(),
-                order.getStatus(),
-                items,
-                order.getShippingAddress().toString(),
-                total
-        );
+    private void validateUserAccess(Long requestedUserId, User currentUser) {
+        // --- Role check ---
+        if (currentUser.getRole().name().equals("CUSTOMER")
+                && !requestedUserId.equals(currentUser.getId())) {
+            throw new UnauthorizedException("Access denied: cannot checkout for another user");
+        }
     }
 }
+

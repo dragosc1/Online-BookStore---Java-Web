@@ -2,27 +2,49 @@ package com.bookstore.dto.response;
 
 import com.bookstore.model.Author;
 import com.bookstore.model.Category;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.util.List;
 
+@Schema(description = "Response payload representing a book")
 public class BookResponseDto {
 
+    @Schema(description = "Book ID", example = "1")
     private Long id;
+
+    @Schema(description = "Book title", example = "Clean Code")
     private String title;
+
+    @Schema(description = "ISBN number", example = "9780132350884")
     private String isbn;
+
+    @Schema(description = "Book price", example = "29.99")
     private Double price;
+
+    @Schema(description = "Available stock", example = "100")
     private Integer stock;
+
+    @Schema(
+            description = "Book description",
+            example = "A handbook of agile software craftsmanship"
+    )
     private String description;
 
-    // Full author info
+    @Schema(
+            description = "List of authors associated with the book"
+    )
     private List<Author> authors;
 
-    // Full category info
+    @Schema(
+            description = "List of categories associated with the book"
+    )
     private List<Category> categories;
 
     public BookResponseDto() {}
 
-    public BookResponseDto(Long id, String title, String isbn, Double price, Integer stock, String description, List<Author> authors, List<Category> categories) {
+    public BookResponseDto(Long id, String title, String isbn, Double price,
+                           Integer stock, String description,
+                           List<Author> authors, List<Category> categories) {
         this.id = id;
         this.title = title;
         this.isbn = isbn;

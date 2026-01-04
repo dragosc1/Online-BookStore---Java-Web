@@ -1,5 +1,6 @@
 package com.bookstore.service.impl;
 
+import com.bookstore.exception.InsufficientStockException;
 import com.bookstore.model.Book;
 import com.bookstore.model.OrderItem;
 import com.bookstore.repository.BookRepository;
@@ -24,7 +25,9 @@ public class InventoryServiceImpl implements InventoryService {
         for (OrderItem item : items) {
             Book book = item.getBook();
             if (book.getStock() < item.getQuantity()) {
-                throw new RuntimeException("Insufficient stock for book: " + book.getTitle());
+                throw new InsufficientStockException(
+                        "Insufficient stock for book: " + book.getTitle()
+                );
             }
         }
     }
@@ -37,7 +40,7 @@ public class InventoryServiceImpl implements InventoryService {
             Book book = item.getBook();
             int newStock = book.getStock() - item.getQuantity();
             if (newStock < 0) {
-                throw new RuntimeException("Insufficient stock for book: " + book.getTitle());
+                throw new InsufficientStockException("Insufficient stock for book: " + book.getTitle());
             }
             book.setStock(newStock);
             bookRepository.save(book);

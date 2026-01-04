@@ -1,7 +1,20 @@
 package com.bookstore.dto.response;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
+@Schema(description = "Response payload representing an author")
 public class AuthorResponseDto {
+
+    @Schema(
+            description = "Unique identifier of the author",
+            example = "1"
+    )
     private Long id;
+
+    @Schema(
+            description = "Author full name",
+            example = "J.K. Rowling"
+    )
     private String name;
 
     public AuthorResponseDto() {}

@@ -1,18 +1,29 @@
 package com.bookstore.dto.response;
 
 import com.bookstore.model.enums.OrderStatus;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
 
+@Schema(description = "Response payload representing an order")
 public class OrderResponseDto {
 
+    @Schema(description = "Order ID", example = "1")
     private Long orderId;
-    private Long userId;
-    private OrderStatus status;
-    private List<OrderItemDto> items;
-    private String shippingAddress;
-    private Double totalAmount;
 
-    public OrderResponseDto() {}
+    @Schema(description = "User ID who placed the order", example = "2")
+    private Long userId;
+
+    @Schema(description = "Order status", example = "PENDING")
+    private OrderStatus status;
+
+    @Schema(description = "List of items in the order")
+    private List<OrderItemDto> items;
+
+    @Schema(description = "Shipping address as a string")
+    private String shippingAddress;
+
+    @Schema(description = "Total order amount", example = "59.99")
+    private Double totalAmount;
 
     public OrderResponseDto(Long orderId, Long userId, OrderStatus status, List<OrderItemDto> items, String shippingAddress, Double totalAmount) {
         this.orderId = orderId;
@@ -71,13 +82,22 @@ public class OrderResponseDto {
         this.totalAmount = totalAmount;
     }
 
+    @Schema(description = "Individual item in an order")
     public static class OrderItemDto {
+        @Schema(description = "Book ID", example = "5")
         private Long bookId;
+
+        @Schema(description = "Book title", example = "Spring Boot in Action")
         private String title;
+
+        @Schema(description = "Book price", example = "19.99")
         private Double price;
+
+        @Schema(description = "Quantity ordered", example = "2")
         private Integer quantity;
 
-        public OrderItemDto() {}
+        public OrderItemDto() {
+        }
 
         public OrderItemDto(Long bookId, String title, Double price, Integer quantity) {
             this.bookId = bookId;

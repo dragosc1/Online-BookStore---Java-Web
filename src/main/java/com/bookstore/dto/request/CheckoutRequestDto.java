@@ -6,35 +6,26 @@ import jakarta.validation.constraints.NotNull;
 @Schema(description = "Checkout request payload")
 public class CheckoutRequestDto {
 
-    @Schema(
-            description = "Cart ID to checkout",
-            example = "12",
-            requiredMode = Schema.RequiredMode.REQUIRED
-    )
+    @NotNull
+    @Schema(description = "Cart ID to checkout", example = "12", required = true)
     private Long cartId;
 
     @NotNull
+    @Schema(description = "Shipping address")
     private AddressRequestDto shippingAddress;
 
-    @Schema(
-            description = "Payment method",
-            example = "MOCK_CARD",
-            requiredMode = Schema.RequiredMode.NOT_REQUIRED
-    )
+    @Schema(description = "Payment method", example = "MOCK_CARD", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
     private String paymentMethod;
 
     @Schema(
-            description = """
-        Optional user ID.
-        - Used ONLY by ADMIN to checkout on behalf of a user
-        - Must NOT be provided by CUSTOMER
-        """,
+            description = "Optional user ID (used only by ADMIN to checkout for a user)",
             example = "3",
             requiredMode = Schema.RequiredMode.NOT_REQUIRED
     )
     private Long userId;
 
-    public CheckoutRequestDto() {}
+    public CheckoutRequestDto() {
+    }
 
     public CheckoutRequestDto(Long cartId, AddressRequestDto shippingAddress, String paymentMethod, Long userId) {
         this.cartId = cartId;

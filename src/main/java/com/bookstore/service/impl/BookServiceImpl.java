@@ -1,6 +1,7 @@
 package com.bookstore.service.impl;
 
 import com.bookstore.exception.InsufficientStockException;
+import com.bookstore.exception.ResourceNotFoundException;
 import com.bookstore.model.Book;
 import com.bookstore.model.Author;
 import com.bookstore.model.Category;
@@ -31,8 +32,9 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public Optional<Book> getBookById(Long id) {
-        return bookRepository.findById(id);
+    public Book getBookById(Long id) {
+        return bookRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Book not found with id " + id));
     }
 
     @Override
@@ -57,6 +59,9 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public void deleteBook(Long id) {
+        if (!bookRepository.existsById(id)) {
+            throw new ResourceNotFoundException("Book not found with id " + id);
+        }
         bookRepository.deleteById(id);
     }
 

@@ -1,5 +1,6 @@
 package com.bookstore.service.impl;
 
+import com.bookstore.exception.ResourceNotFoundException;
 import com.bookstore.model.Author;
 import com.bookstore.repository.AuthorRepository;
 import com.bookstore.service.AuthorService;
@@ -29,7 +30,10 @@ public class AuthorServiceImpl implements AuthorService {
 
     @Override
     public Optional<Author> getAuthorById(Long id) {
-        return authorRepository.findById(id);
+        return Optional.of(
+                authorRepository.findById(id)
+                        .orElseThrow(() -> new ResourceNotFoundException("Author not found with id " + id))
+        );
     }
 
     @Override
@@ -44,6 +48,9 @@ public class AuthorServiceImpl implements AuthorService {
 
     @Override
     public void deleteAuthorById(Long id) {
+        if (!authorRepository.existsById(id)) {
+            throw new ResourceNotFoundException("Author not found with id " + id);
+        }
         authorRepository.deleteById(id);
     }
 }

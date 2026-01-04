@@ -55,6 +55,16 @@ public class GlobalExceptionHandler {
         return buildResponse(ex.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(DuplicateResourceException.class)
+    public ResponseEntity<Object> handleDuplicateResource(DuplicateResourceException ex) {
+        return buildResponse(ex.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(CartOperationException.class)
+    public ResponseEntity<Object> handleCartOperation(CartOperationException ex) {
+        return buildResponse(ex.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Object> handleGeneric(Exception ex) {
         return buildResponse(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);

@@ -16,7 +16,7 @@ public interface BookService {
     List<Book> getAllBooks();
 
     // Get book by id
-    Optional<Book> getBookById(Long id);
+    Book getBookById(Long id);
 
     // Search books by title
     List<Book> searchBooksByTitle(String title);

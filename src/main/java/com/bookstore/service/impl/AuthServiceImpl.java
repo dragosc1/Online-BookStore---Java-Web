@@ -2,6 +2,7 @@ package com.bookstore.service.impl;
 
 import com.bookstore.dto.request.RegisterRequestDto;
 import com.bookstore.exception.EmailAlreadyExistsException;
+import com.bookstore.exception.UnauthorizedException;
 import com.bookstore.exception.UsernameAlreadyExistsException;
 import com.bookstore.model.User;
 import com.bookstore.model.enums.Role;
@@ -35,12 +36,15 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public String login(String username, String password) {
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(username, password)
-        );
-
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        return jwtTokenProvider.generateToken(username);
+        try {
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(username, password)
+            );
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            return jwtTokenProvider.generateToken(username);
+        } catch (Exception e) {
+            throw new UnauthorizedException("Invalid username or password");
+        }
     }
 
     @Override

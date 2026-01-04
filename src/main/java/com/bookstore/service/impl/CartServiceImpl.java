@@ -2,6 +2,9 @@ package com.bookstore.service.impl;
 
 import com.bookstore.dto.request.CartItemRequestDto;
 import com.bookstore.dto.response.CartResponseDto;
+import com.bookstore.exception.CartOperationException;
+import com.bookstore.exception.InsufficientStockException;
+import com.bookstore.exception.UnauthorizedException;
 import com.bookstore.model.Book;
 import com.bookstore.model.Cart;
 import com.bookstore.model.CartItem;
@@ -39,10 +42,7 @@ public class CartServiceImpl implements CartService {
     // ------------------ Get Cart ------------------
     @Override
     public CartResponseDto getCart(Long requestedUserId, User currentUser) {
-        // Access check: CUSTOMER can only access their own cart
-        if (currentUser.getRole().name().equals("CUSTOMER") && !requestedUserId.equals(currentUser.getId())) {
-            throw new RuntimeException("Access denied: cannot view other users' carts");
-        }
+        validateCartAccess(requestedUserId, currentUser);
 
         User user = userRepository.findById(requestedUserId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
@@ -70,10 +70,7 @@ public class CartServiceImpl implements CartService {
     @Override
     @Transactional
     public CartResponseDto addOrUpdateCartItem(Long requestedUserId, User currentUser, CartItemRequestDto dto) {
-        // Access check
-        if (currentUser.getRole().name().equals("CUSTOMER") && !requestedUserId.equals(currentUser.getId())) {
-            throw new RuntimeException("Access denied: cannot modify other users' carts");
-        }
+        validateCartAccess(requestedUserId, currentUser);
 
         User user = userRepository.findById(requestedUserId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
@@ -93,7 +90,7 @@ public class CartServiceImpl implements CartService {
         int requestedQuantity = dto.getQuantity();
 
         if (requestedQuantity > book.getStock()) {
-            throw new RuntimeException(
+            throw new InsufficientStockException(
                     "Only " + book.getStock() + " items available for book: " + book.getTitle()
             );
         }
@@ -121,11 +118,7 @@ public class CartServiceImpl implements CartService {
             User currentUser,
             Long bookId
     ) {
-        // Access check
-        if (currentUser.getRole().name().equals("CUSTOMER")
-                && !requestedUserId.equals(currentUser.getId())) {
-            throw new RuntimeException("Access denied: cannot modify other users' carts");
-        }
+        validateCartAccess(requestedUserId, currentUser);
 
         User user = userRepository.findById(requestedUserId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
@@ -136,10 +129,19 @@ public class CartServiceImpl implements CartService {
         CartItem item = cart.getItems().stream()
                 .filter(ci -> ci.getBook().getId().equals(bookId))
                 .findFirst()
-                .orElseThrow(() -> new RuntimeException("Item not found in cart"));
+                .orElseThrow(() -> new CartOperationException("Item not found in cart"));
 
         cart.getItems().remove(item);
 
         return getCart(requestedUserId, currentUser);
     }
+
+
+    private void validateCartAccess(Long requestedUserId, User currentUser) {
+        if (currentUser.getRole().name().equals("CUSTOMER")
+                && !requestedUserId.equals(currentUser.getId())) {
+            throw new UnauthorizedException("Access denied");
+        }
+    }
 }
+
