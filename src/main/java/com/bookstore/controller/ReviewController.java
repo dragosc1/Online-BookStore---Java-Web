@@ -7,6 +7,7 @@ import com.bookstore.exception.UnauthorizedException;
 import com.bookstore.model.Review;
 import com.bookstore.security.UserDetailsImpl;
 import com.bookstore.service.ReviewService;
+import com.bookstore.util.ReviewMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
@@ -50,7 +51,7 @@ public class ReviewController {
 
         Review savedReview = reviewService.addReview(bookId, userId, review);
 
-        return ResponseEntity.ok(toResponseDto(savedReview));
+        return ResponseEntity.ok(ReviewMapper.toResponseDto(savedReview));
     }
 
     // ========= GET REVIEWS BY BOOK =========
@@ -62,7 +63,7 @@ public class ReviewController {
     public ResponseEntity<List<ReviewResponseDto>> getReviewsByBook(@PathVariable Long bookId) {
         List<ReviewResponseDto> reviews = reviewService.getReviewsByBook(bookId)
                 .stream()
-                .map(this::toResponseDto)
+                .map(ReviewMapper::toResponseDto)
                 .collect(Collectors.toList());
         return ResponseEntity.ok(reviews);
     }
@@ -76,7 +77,7 @@ public class ReviewController {
     public ResponseEntity<List<ReviewResponseDto>> getReviewsByUser(@PathVariable Long userId) {
         List<ReviewResponseDto> reviews = reviewService.getReviewsByUser(userId)
                 .stream()
-                .map(this::toResponseDto)
+                .map(ReviewMapper::toResponseDto)
                 .collect(Collectors.toList());
         return ResponseEntity.ok(reviews);
     }
@@ -92,7 +93,7 @@ public class ReviewController {
             @PathVariable Long userId) {
 
         Optional<Review> reviewOpt = reviewService.getReviewByBookAndUser(bookId, userId);
-        return ResponseEntity.ok(reviewOpt.map(this::toResponseDto));
+        return ResponseEntity.ok(reviewOpt.map(ReviewMapper::toResponseDto));
     }
 
     // ========= UPDATE REVIEW =========
@@ -118,7 +119,7 @@ public class ReviewController {
 
         Review updatedReview = reviewService.updateReview(reviewId, existingReview);
 
-        return ResponseEntity.ok(toResponseDto(updatedReview));
+        return ResponseEntity.ok(ReviewMapper.toResponseDto(updatedReview));
     }
 
     // ========= DELETE REVIEW =========
@@ -144,17 +145,5 @@ public class ReviewController {
 
         reviewService.deleteReview(reviewId);
         return ResponseEntity.noContent().build();
-    }
-
-    // ========= HELPER: Convert Review -> ReviewResponseDto =========
-    private ReviewResponseDto toResponseDto(Review review) {
-        return new ReviewResponseDto(
-                review.getId(),
-                review.getComment(),
-                review.getRating(),
-                review.getBook().getId(),
-                review.getUser().getId(),
-                review.getUser().getUsername()
-        );
     }
 }
