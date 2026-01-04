@@ -1,6 +1,8 @@
 package com.bookstore.model;
 
 import com.bookstore.model.enums.Role;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import java.util.List;
 
@@ -18,15 +20,18 @@ public class User {
     private Role role;
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    @JsonIgnore
     private Cart cart;
 
     @OneToMany(mappedBy = "user")
+    @JsonIgnore
     private List<Order> orders;
 
     @OneToMany(mappedBy = "user")
     private List<Review> reviews;
 
     @OneToMany(mappedBy = "user")
+    @JsonIgnore
     private List<Address> addresses;
 
     // constructor
@@ -52,12 +57,7 @@ public class User {
                 "id=" + id +
                 ", username='" + username + '\'' +
                 ", email='" + email + '\'' +
-                ", password='" + password + '\'' +
                 ", role=" + role +
-                ", cart=" + cart +
-                ", orders=" + orders +
-                ", reviews=" + reviews +
-                ", addresses=" + addresses +
                 '}';
     }
 
