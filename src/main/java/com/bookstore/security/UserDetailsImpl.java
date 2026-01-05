@@ -5,6 +5,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
+import java.util.List;
 
 public class UserDetailsImpl implements UserDetails {
 
@@ -18,6 +19,10 @@ public class UserDetailsImpl implements UserDetails {
         this.username = user.getUsername();
         this.password = user.getPassword();
         this.authorities = authorities;
+    }
+
+    public UserDetailsImpl(User user) {
+        this(user, List.of());
     }
 
     public Long getId() {
