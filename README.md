@@ -1,7 +1,8 @@
 
 # Online Bookstore - Java Spring MVP
 
-**Authors:** Adrian Cernat, Dragos Ciobanu  
+**Author:** Dragos Ciobanu
+**Coordinator** Adrian Cernat
 **Date:** December 2025  
 
 This project is a **Minimal Viable Product (MVP)** for an Online Bookstore built with **Java Spring Boot**, using **JWT authentication**, **MySQL** for persistence, and **Swagger/OpenAPI** for API documentation.
