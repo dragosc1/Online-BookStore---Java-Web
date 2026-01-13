@@ -143,4 +143,21 @@ public class BookController {
                         .collect(Collectors.toList())
         );
     }
+
+    // ========= GET BOOKS BY RATING =========
+    @Operation(
+            summary = "Get books by rating",
+            description = "Retrieve all books with average rating greater than or equal to the given value (1–5)"
+    )
+    @GetMapping("/rating")
+    public ResponseEntity<List<BookResponseDto>> getBooksByRating(
+            @RequestParam Double minRating) {
+
+        return ResponseEntity.ok(
+                bookService.getBooksByRating(minRating)
+                        .stream()
+                        .map(BookMapper::toResponseDto)
+                        .collect(Collectors.toList())
+        );
+    }
 }

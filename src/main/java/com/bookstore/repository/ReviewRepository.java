@@ -3,7 +3,9 @@ package com.bookstore.repository;
 import com.bookstore.model.Review;
 import com.bookstore.model.Book;
 import com.bookstore.model.User;
+import com.bookstore.model.enums.OrderStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;

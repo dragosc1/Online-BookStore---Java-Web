@@ -41,4 +41,7 @@ public interface BookService {
 
     // Get books under a price
     List<Book> getBooksByPrice(Double maxPrice);
+
+    // Gets book by their rating
+    List<Book> getBooksByRating(Double rating);
 }

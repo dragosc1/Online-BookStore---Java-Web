@@ -1,6 +1,7 @@
 package com.bookstore.service.impl;
 
 import com.bookstore.exception.InsufficientStockException;
+import com.bookstore.exception.InvalidOrderStateException;
 import com.bookstore.exception.ResourceNotFoundException;
 import com.bookstore.model.Book;
 import com.bookstore.model.Author;
@@ -83,5 +84,13 @@ public class BookServiceImpl implements BookService {
                             + quantityRequested + ", Available: " + book.getStock()
             );
         }
+    }
+
+    @Override
+    public List<Book> getBooksByRating(Double rating) {
+        if (rating < 1 || rating > 5) {
+            throw new IllegalArgumentException("Rating must be between 1 and 5");
+        }
+        return bookRepository.findBooksByMinAverageRating(rating);
     }
 }
