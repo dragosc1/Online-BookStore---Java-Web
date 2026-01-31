@@ -93,12 +93,41 @@ CREATE DATABASE online_bookstore;
 * Update `application.properties` or `application.yml` with your credentials:
 
 ```properties
-spring.datasource.url=jdbc:mysql://localhost:3306/online_bookstore?useSSL=false&serverTimezone=UTC
-spring.datasource.username=root
-spring.datasource.password=your_password
+# ==============================
+# Server Configuration
+# ==============================
+server.port=8080
+
+# ==============================
+# MySQL Database Configuration
+# ==============================
+spring.datasource.url=jdbc:mysql://localhost:3307/bookstore_db?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+spring.datasource.username=bookstore_user
+spring.datasource.password=bookstore123
+spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
+
+# ==============================
+# JPA/Hibernate Configuration
+# ==============================
 spring.jpa.hibernate.ddl-auto=update
 spring.jpa.show-sql=true
+spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQLDialect
 spring.jpa.properties.hibernate.format_sql=true
+
+# ==============================
+# Logging
+# ==============================
+logging.level.org.springframework.web=INFO
+logging.level.org.hibernate=INFO
+logging.level.org.springframework.security=DEBUG
+
+# ==============================
+# JWT Configuration
+# ==============================
+jwt.secret=qkG5L2fH7mN0eR8X+Vt9Uj2wPz4dQaB6
+jwt.expiration=86400000
+jwt.token-prefix=Bearer
+jwt.header=Authorization
 ```
 
 3. **Build the project**
